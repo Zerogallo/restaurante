@@ -1,0 +1,48 @@
+{
+  "users": [],
+  "menu": [
+    {
+      "id": "1",
+      "name": "Frango Grelhado",
+      "category": "food",
+      "price": 25.9,
+      "description": "Com legumes"
+    },
+    {
+      "id": "2",
+      "name": "Parmegiana",
+      "category": "food",
+      "price": 32.9,
+      "description": "Arroz, fritas"
+    },
+    {
+      "id": "3",
+      "name": "Pudim",
+      "category": "dessert",
+      "price": 8.9,
+      "description": "Leite condensado"
+    },
+    {
+      "id": "4",
+      "name": "Mousse de Maracujá",
+      "category": "dessert",
+      "price": 9.9,
+      "description": ""
+    },
+    {
+      "id": "5",
+      "name": "Coca-Cola 350ml",
+      "category": "drink",
+      "price": 6.5,
+      "description": ""
+    },
+    {
+      "id": "6",
+      "name": "Suco Natural",
+      "category": "drink",
+      "price": 7.9,
+      "description": "Laranja, limão, couve"
+    }
+  ],
+  "orders": []
+}
