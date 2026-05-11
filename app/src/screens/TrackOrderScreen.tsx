@@ -299,7 +299,7 @@ function getStatusMessage(status: string): string {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8f9fa' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#e67e22', borderBottomWidth: 1, borderBottomColor: '#eee', paddingTop: 40 },
   backButton: { padding: 8 },
   headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#333' },
   orderIdContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#fff', marginTop: 8 },

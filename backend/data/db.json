@@ -15,6 +15,14 @@
       "phone": "",
       "password_hash": "$2b$10$2.z.ltxZOgEdsLPFTSOrueH.cIoaSr05GqiHbwEuQYcXsqdH/zxXm",
       "total_spent": 199.10000000000002
+    },
+    {
+      "id": "03f7db2f-6b62-459d-b322-4d01d8e63ddd",
+      "email": "test@test.com",
+      "name": "test",
+      "password_hash": "$2b$10$sxq8gJyJFjDiPkhD45915ubNXi7W5cd6yYvW7.xK8nI3gYIqzsD/i",
+      "total_spent": 165.39999999999998,
+      "createdAt": "2026-05-11T20:55:57.055Z"
     }
   ],
   "menu": [
@@ -448,6 +456,92 @@
         {
           "status": "pending",
           "timestamp": "2026-05-11T20:32:01.487Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
+    },
+    {
+      "id": "e926db5a-0cd3-4b8b-92eb-78051e1b2050",
+      "userId": "03f7db2f-6b62-459d-b322-4d01d8e63ddd",
+      "clientName": "test",
+      "clientEmail": "test@test.com",
+      "clientId": "03f7db2f-6b62-459d-b322-4d01d8e63ddd",
+      "items": [
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        },
+        {
+          "id": "8",
+          "name": "Bolo de Chocolate",
+          "price": 12.9,
+          "qty": 1
+        },
+        {
+          "id": "15",
+          "name": "Hambúrguer Artesanal",
+          "price": 30,
+          "qty": 1
+        }
+      ],
+      "total": 49.4,
+      "subtotal": 49.4,
+      "observations": "",
+      "location": "Rua test",
+      "date": "2026-05-11T20:57:11.434Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T20:57:11.434Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
+    },
+    {
+      "id": "06fb078d-53d8-456c-888b-f0b07ef37ccc",
+      "userId": "03f7db2f-6b62-459d-b322-4d01d8e63ddd",
+      "clientName": "test",
+      "clientEmail": "test@test.com",
+      "clientId": "03f7db2f-6b62-459d-b322-4d01d8e63ddd",
+      "items": [
+        {
+          "id": "2",
+          "name": "Parmegiana",
+          "price": 32.9,
+          "qty": 2
+        },
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        },
+        {
+          "id": "3",
+          "name": "Pudim",
+          "price": 8.9,
+          "qty": 2
+        },
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        }
+      ],
+      "total": 115.99999999999999,
+      "subtotal": 115.99999999999999,
+      "observations": "",
+      "location": "rua test",
+      "date": "2026-05-11T21:17:56.189Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T21:17:56.189Z",
           "message": "Pedido confirmado e aguardando na fila"
         }
       ]
