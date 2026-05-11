@@ -14,7 +14,7 @@
       "name": "Michelli",
       "phone": "",
       "password_hash": "$2b$10$2.z.ltxZOgEdsLPFTSOrueH.cIoaSr05GqiHbwEuQYcXsqdH/zxXm",
-      "total_spent": 67.7
+      "total_spent": 199.10000000000002
     }
   ],
   "menu": [
@@ -118,6 +118,99 @@
       "observations": "",
       "location": "Loja principal",
       "date": "2026-05-11T18:51:21.892Z",
+      "status": "pending"
+    },
+    {
+      "id": "964c9c16-4c1d-4241-b846-91a7d343e5ba",
+      "userId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "clientName": "Michelli",
+      "clientEmail": "michelli@test.com",
+      "clientId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "items": [
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        },
+        {
+          "id": "2",
+          "name": "Parmegiana",
+          "price": 32.9,
+          "qty": 1
+        },
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        }
+      ],
+      "total": 65.3,
+      "subtotal": 65.3,
+      "observations": "",
+      "location": "Rua juparana",
+      "date": "2026-05-11T19:11:32.303Z",
+      "status": "pending"
+    },
+    {
+      "id": "eea933e2-dd94-44fc-8e06-1fe2ebda3c63",
+      "userId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "clientName": "Michelli",
+      "clientEmail": "michelli@test.com",
+      "clientId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "items": [
+        {
+          "id": "3",
+          "name": "Pudim",
+          "price": 8.9,
+          "qty": 1
+        },
+        {
+          "id": "6",
+          "name": "Suco Natural",
+          "price": 7.9,
+          "qty": 1
+        }
+      ],
+      "total": 16.8,
+      "subtotal": 16.8,
+      "observations": "",
+      "location": "Retirada no local",
+      "date": "2026-05-11T19:12:21.476Z",
+      "status": "pending"
+    },
+    {
+      "id": "4d65c621-191d-493a-8d33-04a66750ba39",
+      "userId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "clientName": "Michelli",
+      "clientEmail": "michelli@test.com",
+      "clientId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "items": [
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        },
+        {
+          "id": "2",
+          "name": "Parmegiana",
+          "price": 32.9,
+          "qty": 1
+        },
+        {
+          "id": "4",
+          "name": "Mousse de Maracujá",
+          "price": 9.9,
+          "qty": 1
+        }
+      ],
+      "total": 49.3,
+      "subtotal": 49.3,
+      "observations": "",
+      "location": "Rua juparana",
+      "date": "2026-05-11T19:13:52.293Z",
       "status": "pending"
     }
   ]
