@@ -1,5 +1,22 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "email": "renan.genesisgt724532@gmail.com",
+      "name": "Renan ",
+      "phone": "",
+      "password_hash": "$2b$10$ILeNPu/Bc/nv.rJe9rqlNe7ubANZ8OUt6dUSlN10NoGVuHT0YL6Ti",
+      "total_spent": 41.3
+    },
+    {
+      "id": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "email": "michelli@test.com",
+      "name": "Michelli",
+      "phone": "",
+      "password_hash": "$2b$10$2.z.ltxZOgEdsLPFTSOrueH.cIoaSr05GqiHbwEuQYcXsqdH/zxXm",
+      "total_spent": 67.7
+    }
+  ],
   "menu": [
     {
       "id": "1",
@@ -44,5 +61,64 @@
       "description": "Laranja, limão, couve"
     }
   ],
-  "orders": []
+  "orders": [
+    {
+      "id": "85ff39ee-22aa-4d84-98a0-04a879595a5e",
+      "userId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "items": [
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        },
+        {
+          "id": "3",
+          "name": "Pudim",
+          "price": 8.9,
+          "qty": 1
+        },
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        }
+      ],
+      "total": 41.3,
+      "observations": "",
+      "location": "Loja principal",
+      "date": "2026-05-11T18:49:27.873Z",
+      "status": "pending"
+    },
+    {
+      "id": "de6cf655-8f0c-4a3d-a14e-2cb85e1c0751",
+      "userId": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
+      "items": [
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        },
+        {
+          "id": "2",
+          "name": "Parmegiana",
+          "price": 32.9,
+          "qty": 1
+        },
+        {
+          "id": "3",
+          "name": "Pudim",
+          "price": 8.9,
+          "qty": 1
+        }
+      ],
+      "total": 67.7,
+      "observations": "",
+      "location": "Loja principal",
+      "date": "2026-05-11T18:51:21.892Z",
+      "status": "pending"
+    }
+  ]
 }
