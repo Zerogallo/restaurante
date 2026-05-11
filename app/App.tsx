@@ -6,9 +6,17 @@ import { CartProvider } from './src/context/CartContext';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import MainTabs from './MainTabs';
+import TrackOrderScreen from './src/screens/TrackOrderScreen'; 
 import { View, ActivityIndicator } from 'react-native';
 
-const Stack = createStackNavigator();
+type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  HomeTabs: undefined;
+  TrackOrder: { orderId: string }; 
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 function AppNavigator() {
   const { user, loading } = useAuth();
@@ -29,7 +37,10 @@ function AppNavigator() {
           <Stack.Screen name="Register" component={RegisterScreen} />
         </>
       ) : (
-        <Stack.Screen name="Main" component={MainTabs} />
+        <>
+          <Stack.Screen name="HomeTabs" component={MainTabs} />
+          <Stack.Screen name="TrackOrder" component={TrackOrderScreen} />
+        </>
       )}
     </Stack.Navigator>
   );

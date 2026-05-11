@@ -1,511 +1,392 @@
-// screens/CheckoutScreen.tsx
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  Alert,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import api from '../utils/api';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MaterialIcons } from '@expo/vector-icons';
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
 
-type CheckoutScreenProps = {
-  navigation: NativeStackNavigationProp<any>;
-};
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-export default function CheckoutScreen({ navigation }: CheckoutScreenProps) {
-  const { cart, getTotal, clearCart, updateQuantity, getItemCount } = useCart();
-  const { user } = useAuth();
-  const [observations, setObservations] = useState('');
-  const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
-  const [loading, setLoading] = useState(false);
+const JWT_SECRET = process.env.JWT_SECRET || 'chave_super_secreta_restaurante';
+const DB_PATH = path.join(__dirname, 'data', 'db.json');
 
-  const deliveryTax = 5.90;
-  const subtotal = getTotal();
-  const total = deliveryMethod === 'delivery' ? subtotal + deliveryTax : subtotal;
-
-  const confirmOrder = async () => {
-    if (cart.length === 0) {
-      Alert.alert('Carrinho vazio', 'Adicione itens antes de finalizar.');
-      return;
-    }
-
-    if (deliveryMethod === 'delivery' && !deliveryAddress.trim()) {
-      Alert.alert('Endereço obrigatório', 'Por favor, informe o endereço de entrega.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const payload = {
-        items: cart.map(item => ({ id: item.id, qty: item.quantity })),
-        observations: observations,
-        location: deliveryMethod === 'delivery' ? deliveryAddress : 'Retirada no local',
-        deliveryMethod: deliveryMethod,
-      };
-
-      const response = await api.post('/orders', payload);
-      
-      Alert.alert(
-        '✅ Pedido confirmado!',
-        `Cliente: ${user?.name}\n` +
-        `Total: R$ ${response.data.total.toFixed(2)}\n` +
-        `Pedido #${response.data.orderId.slice(-6)}\n` +
-        `Tipo: ${deliveryMethod === 'delivery' ? 'Delivery' : 'Retirada'}`,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              clearCart();
-              navigation.navigate('Início');
-            },
-          },
-        ]
-      );
-    } catch (error: any) {
-      console.error('Erro ao finalizar:', error);
-      
-      if (error.response?.data?.error) {
-        Alert.alert('Erro', error.response.data.error);
-      } else if (error.message === 'Network Error') {
-        Alert.alert('Erro de rede', 'Não foi possível conectar ao servidor. Verifique sua conexão.');
-      } else {
-        Alert.alert('Erro', 'Não foi possível finalizar o pedido. Tente novamente.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateItemQuantity = (id: string, currentQty: number, change: number) => {
-    const newQty = currentQty + change;
-    updateQuantity(id, newQty);
-  };
-
-  if (cart.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <MaterialIcons name="shopping-cart" size={80} color="#ccc" />
-        <Text style={styles.emptyText}>Seu carrinho está vazio</Text>
-        <Text style={styles.emptySubtext}>Adicione itens do cardápio para começar</Text>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cardápio')}>
-          <Text style={styles.buttonText}>Ver Cardápio</Text>
-        </TouchableOpacity>
-      </View>
-    );
+// Inicializa o banco de dados
+function initDB() {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir);
   }
 
-  return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <Text style={styles.title}>🧾 Seu Pedido</Text>
-        <Text style={styles.subtitle}>{getItemCount()} item(ns) no carrinho</Text>
-      </View>
+  if (!fs.existsSync(DB_PATH)) {
+    const data = {
+      users: [],
+      menu: [
+        { id: '1', name: 'Frango Grelhado', category: 'food', price: 25.90, description: 'Com legumes' },
+        { id: '2', name: 'Parmegiana', category: 'food', price: 32.90, description: 'Arroz, fritas' },
+        { id: '3', name: 'Pudim', category: 'dessert', price: 8.90, description: 'Leite condensado' },
+        { id: '4', name: 'Mousse de Maracujá', category: 'dessert', price: 9.90, description: '' },
+        { id: '5', name: 'Coca-Cola 350ml', category: 'drink', price: 6.50, description: '' },
+        { id: '6', name: 'Suco Natural', category: 'drink', price: 7.90, description: 'Laranja, limão, couve' }
+      ],
+      orders: []
+    };
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+  }
+}
+initDB();
 
-      {/* Lista de itens */}
-      <View style={styles.itemsSection}>
-        <Text style={styles.sectionTitle}>Itens</Text>
-        {cart.map((item) => (
-          <View key={item.id} style={styles.cartItem}>
-            <View style={styles.itemInfo}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
-            </View>
-            <View style={styles.quantityContainer}>
-              <TouchableOpacity
-                onPress={() => updateItemQuantity(item.id, item.quantity, -1)}
-                style={styles.qtyButton}
-                disabled={loading}
-              >
-                <MaterialIcons name="remove" size={18} color="#fff" />
-              </TouchableOpacity>
-              <Text style={styles.qtyValue}>{item.quantity}</Text>
-              <TouchableOpacity
-                onPress={() => updateItemQuantity(item.id, item.quantity, 1)}
-                style={styles.qtyButton}
-                disabled={loading}
-              >
-                <MaterialIcons name="add" size={18} color="#fff" />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.itemTotal}>
-              R$ {(item.price * item.quantity).toFixed(2)}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Tipo de entrega */}
-      <View style={styles.deliverySection}>
-        <Text style={styles.sectionTitle}>Tipo de entrega</Text>
-        <View style={styles.deliveryOptions}>
-          <TouchableOpacity
-            style={[
-              styles.deliveryOption,
-              deliveryMethod === 'pickup' && styles.deliveryOptionActive,
-            ]}
-            onPress={() => setDeliveryMethod('pickup')}
-          >
-            <MaterialIcons
-              name="store"
-              size={24}
-              color={deliveryMethod === 'pickup' ? '#e67e22' : '#888'}
-            />
-            <Text
-              style={[
-                styles.deliveryOptionText,
-                deliveryMethod === 'pickup' && styles.deliveryOptionTextActive,
-              ]}
-            >
-              Retirada no local
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.deliveryOption,
-              deliveryMethod === 'delivery' && styles.deliveryOptionActive,
-            ]}
-            onPress={() => setDeliveryMethod('delivery')}
-          >
-            <MaterialIcons
-              name="local-shipping"
-              size={24}
-              color={deliveryMethod === 'delivery' ? '#e67e22' : '#888'}
-            />
-            <Text
-              style={[
-                styles.deliveryOptionText,
-                deliveryMethod === 'delivery' && styles.deliveryOptionTextActive,
-              ]}
-            >
-              Delivery
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {deliveryMethod === 'delivery' && (
-          <TextInput
-            style={styles.addressInput}
-            placeholder="Digite seu endereço completo"
-            placeholderTextColor="#999"
-            value={deliveryAddress}
-            onChangeText={setDeliveryAddress}
-            multiline
-            editable={!loading}
-          />
-        )}
-      </View>
-
-      {/* Observações */}
-      <View style={styles.observationsSection}>
-        <Text style={styles.sectionTitle}>Observações</Text>
-        <TextInput
-          style={styles.observationsInput}
-          placeholder="Ex: sem cebola, talher extra, ponto da carne..."
-          placeholderTextColor="#999"
-          value={observations}
-          onChangeText={setObservations}
-          multiline
-          numberOfLines={3}
-          editable={!loading}
-        />
-      </View>
-
-      {/* Resumo dos valores */}
-      <View style={styles.summarySection}>
-        <Text style={styles.sectionTitle}>Resumo</Text>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>R$ {subtotal.toFixed(2)}</Text>
-        </View>
-        {deliveryMethod === 'delivery' && (
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Taxa de entrega</Text>
-            <Text style={styles.summaryValue}>R$ {deliveryTax.toFixed(2)}</Text>
-          </View>
-        )}
-        <View style={[styles.summaryRow, styles.totalRow]}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>R$ {total.toFixed(2)}</Text>
-        </View>
-      </View>
-
-      {/* Botão finalizar */}
-      <TouchableOpacity
-        style={[styles.confirmButton, loading && styles.confirmButtonDisabled]}
-        onPress={confirmOrder}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" size="small" />
-        ) : (
-          <Text style={styles.confirmButtonText}>Confirmar Pedido</Text>
-        )}
-      </TouchableOpacity>
-
-      {/* Botão limpar carrinho */}
-      <TouchableOpacity
-        style={styles.clearButton}
-        onPress={() => {
-          Alert.alert(
-            'Limpar carrinho',
-            'Tem certeza que deseja remover todos os itens?',
-            [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Limpar', style: 'destructive', onPress: clearCart },
-            ]
-          );
-        }}
-        disabled={loading}
-      >
-        <Text style={styles.clearButtonText}>Limpar Carrinho</Text>
-      </TouchableOpacity>
-
-      {/* Espaço no final */}
-      <View style={{ height: 30 }} />
-    </ScrollView>
-  );
+function readDB() {
+  const raw = fs.readFileSync(DB_PATH);
+  return JSON.parse(raw);
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  header: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#888',
-    marginTop: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
-  },
-  itemsSection: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginTop: 8,
-  },
-  cartItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  itemInfo: {
-    flex: 2,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-  },
-  itemPrice: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 2,
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  qtyButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#e67e22',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  qtyValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    minWidth: 30,
-    textAlign: 'center',
-    color: '#333',
-  },
-  itemTotal: {
-    flex: 1,
-    textAlign: 'right',
-    fontWeight: '600',
-    color: '#333',
-  },
-  deliverySection: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginTop: 8,
-  },
-  deliveryOptions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  deliveryOption: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    backgroundColor: '#f9f9f9',
-  },
-  deliveryOptionActive: {
-    borderColor: '#e67e22',
-    backgroundColor: '#fff3e6',
-  },
-  deliveryOptionText: {
-    fontSize: 14,
-    color: '#888',
-  },
-  deliveryOptionTextActive: {
-    color: '#e67e22',
-    fontWeight: '500',
-  },
-  addressInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 12,
-    marginTop: 12,
-    fontSize: 14,
-    backgroundColor: '#f9f9f9',
-  },
-  observationsSection: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginTop: 8,
-  },
-  observationsInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 14,
-    backgroundColor: '#f9f9f9',
-    textAlignVertical: 'top',
-  },
-  summarySection: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginTop: 8,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  summaryValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-  },
-  totalRow: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  totalValue: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#e67e22',
-  },
-  confirmButton: {
-    backgroundColor: '#e67e22',
-    marginHorizontal: 20,
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  confirmButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  confirmButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  clearButton: {
-    marginHorizontal: 20,
-    marginTop: 12,
-    padding: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#dc3545',
-  },
-  clearButtonText: {
-    color: '#dc3545',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-    backgroundColor: '#fff',
-  },
-  emptyText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 16,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#888',
-    textAlign: 'center',
-    marginTop: 8,
-    marginBottom: 24,
-  },
-  button: {
-    backgroundColor: '#e67e22',
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 25,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+function writeDB(data) {
+  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+}
+
+// Middleware de autenticação
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Token não fornecido' });
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Token inválido' });
+  }
+}
+
+// Função para tempo estimado baseado no status
+function getEstimatedTime(status) {
+  const times = {
+    pending: '10-15 minutos',
+    preparing: '20-30 minutos',
+    delivering: '5-10 minutos',
+    delivered: 'Entregue',
+    cancelled: 'Cancelado'
+  };
+  return times[status] || 'Aguardando';
+}
+
+// Função para mensagem de status
+function getStatusMessage(status) {
+  const messages = {
+    pending: 'Pedido confirmado e aguardando na fila',
+    preparing: 'Pedido sendo preparado pela cozinha',
+    delivering: 'Pedido saiu para entrega 🛵',
+    delivered: 'Pedido entregue com sucesso! ✅',
+    cancelled: 'Pedido cancelado ❌'
+  };
+  return messages[status] || 'Processando pedido';
+}
+
+// ---------- ROTAS ----------
+
+// 1. Login (ou criar usuário se não existir)
+app.post('/api/login', async (req, res) => {
+  const { email, password, name } = req.body;
+  let db = readDB();
+
+  let user = db.users.find(u => u.email === email);
+  
+  if (!user) {
+    if (!name) return res.status(400).json({ error: 'Nome necessário para cadastro' });
+    const hashed = await bcrypt.hash(password, 10);
+    user = {
+      id: uuidv4(),
+      email,
+      name,
+      password_hash: hashed,
+      total_spent: 0,
+      createdAt: new Date().toISOString()
+    };
+    db.users.push(user);
+    writeDB(db);
+  } else {
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) return res.status(401).json({ error: 'Credenciais inválidas' });
+  }
+
+  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+  res.json({ 
+    token, 
+    user: { 
+      id: user.id, 
+      name: user.name, 
+      email: user.email, 
+      total_spent: user.total_spent 
+    } 
+  });
+});
+
+// 2. Obter perfil com histórico
+app.get('/api/profile', authMiddleware, (req, res) => {
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.userId);
+  if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+  const userOrders = db.orders
+    .filter(o => o.userId === req.userId)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    total_spent: user.total_spent,
+    history: userOrders.map(order => ({
+      id: order.id,
+      date: order.date,
+      total: order.total,
+      status: order.status,
+      clientName: order.clientName,
+      clientEmail: order.clientEmail,
+      items: order.items
+    }))
+  });
+});
+
+// 3. Cardápio
+app.get('/api/menu', authMiddleware, (req, res) => {
+  const db = readDB();
+  const { category } = req.query;
+  let menu = db.menu;
+  if (category && ['food', 'dessert', 'drink'].includes(category)) {
+    menu = menu.filter(item => item.category === category);
+  }
+  res.json(menu);
+});
+
+// 4. Finalizar pedido (COM DADOS DO CLIENTE E STATUS INICIAL)
+app.post('/api/orders', authMiddleware, (req, res) => {
+  const { items, observations, location } = req.body;
+  
+  if (!items || !items.length) {
+    return res.status(400).json({ error: 'Pedido vazio' });
+  }
+
+  let db = readDB();
+  const user = db.users.find(u => u.id === req.userId);
+  
+  if (!user) {
+    return res.status(404).json({ error: 'Usuário não existe' });
+  }
+
+  // Calcula total
+  let total = 0;
+  for (const item of items) {
+    const menuItem = db.menu.find(m => m.id === item.id);
+    if (!menuItem) {
+      return res.status(400).json({ error: `Item ${item.id} inválido` });
+    }
+    total += menuItem.price * (item.qty || 1);
+  }
+
+  // Cria o pedido com TODOS os dados do cliente e histórico de status
+  const newOrder = {
+    id: uuidv4(),
+    userId: user.id,
+    clientName: user.name,
+    clientEmail: user.email,
+    clientId: user.id,
+    items: items.map(it => {
+      const menuItem = db.menu.find(m => m.id === it.id);
+      return { 
+        id: it.id, 
+        name: menuItem.name, 
+        price: menuItem.price, 
+        qty: it.qty || 1 
+      };
+    }),
+    total: total,
+    subtotal: total,
+    observations: observations || '',
+    location: location || 'Loja principal',
+    date: new Date().toISOString(),
+    status: 'pending',
+    statusHistory: [
+      {
+        status: 'pending',
+        timestamp: new Date().toISOString(),
+        message: 'Pedido confirmado e aguardando na fila'
+      }
+    ]
+  };
+  
+  db.orders.push(newOrder);
+  user.total_spent = (user.total_spent || 0) + total;
+  writeDB(db);
+
+  console.log('='.repeat(50));
+  console.log('🛒 NOVO PEDIDO RECEBIDO:');
+  console.log(`📋 Pedido ID: ${newOrder.id}`);
+  console.log(`👤 Cliente: ${newOrder.clientName} (${newOrder.clientEmail})`);
+  console.log(`💰 Total: R$ ${newOrder.total.toFixed(2)}`);
+  console.log(`📦 Itens: ${newOrder.items.map(i => `${i.qty}x ${i.name}`).join(', ')}`);
+  console.log(`📍 Local: ${newOrder.location}`);
+  console.log(`📝 Obs: ${newOrder.observations || 'Nenhuma'}`);
+  console.log(`📊 Status: ${newOrder.status}`);
+  console.log('='.repeat(50));
+
+  res.status(201).json({ 
+    orderId: newOrder.id, 
+    total: newOrder.total,
+    clientName: newOrder.clientName,
+    status: newOrder.status,
+    message: 'Pedido realizado com sucesso!'
+  });
+});
+
+// 5. Rastrear pedido específico (para o cliente)
+app.get('/api/orders/:orderId/track', authMiddleware, (req, res) => {
+  const db = readDB();
+  const order = db.orders.find(o => o.id === req.params.orderId);
+  
+  if (!order) {
+    return res.status(404).json({ error: 'Pedido não encontrado' });
+  }
+  
+  if (order.userId !== req.userId) {
+    return res.status(403).json({ error: 'Acesso negado' });
+  }
+  
+  res.json({
+    id: order.id,
+    status: order.status,
+    statusHistory: order.statusHistory || [],
+    estimatedTime: getEstimatedTime(order.status),
+    items: order.items,
+    total: order.total,
+    date: order.date,
+    location: order.location,
+    clientName: order.clientName
+  });
+});
+
+// 6. Listar todos os pedidos do usuário
+app.get('/api/orders', authMiddleware, (req, res) => {
+  const db = readDB();
+  const orders = db.orders
+    .filter(o => o.userId === req.userId)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  res.json(orders.map(o => ({
+    id: o.id,
+    status: o.status,
+    total: o.total,
+    date: o.date,
+    itemsCount: o.items.reduce((sum, i) => sum + i.qty, 0),
+    location: o.location
+  })));
+});
+
+// 7. ADMIN: Atualizar status do pedido
+app.put('/api/admin/orders/:orderId/status', authMiddleware, (req, res) => {
+  const { status } = req.body;
+  const validStatuses = ['pending', 'preparing', 'delivering', 'delivered', 'cancelled'];
+  
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Status inválido' });
+  }
+  
+  let db = readDB();
+  const order = db.orders.find(o => o.id === req.params.orderId);
+  
+  if (!order) {
+    return res.status(404).json({ error: 'Pedido não encontrado' });
+  }
+  
+  // Verifica se o usuário é admin (para simplificar, qualquer usuário pode ser admin?
+  // Por enquanto, qualquer um pode atualizar, mas idealmente verificar role)
+  
+  const oldStatus = order.status;
+  order.status = status;
+  
+  if (!order.statusHistory) {
+    order.statusHistory = [];
+  }
+  
+  order.statusHistory.push({
+    status: status,
+    timestamp: new Date().toISOString(),
+    message: getStatusMessage(status)
+  });
+  
+  writeDB(db);
+  
+  console.log(`📦 Pedido #${order.id.slice(-6)}: ${oldStatus} → ${status}`);
+  
+  res.json({ 
+    success: true, 
+    status, 
+    message: getStatusMessage(status),
+    orderId: order.id
+  });
+});
+
+// 8. ADMIN: Listar todos os pedidos (para gestão)
+app.get('/api/admin/orders', authMiddleware, (req, res) => {
+  const db = readDB();
+  const { page = 1, limit = 20, status } = req.query;
+  
+  let orders = [...db.orders];
+  
+  if (status && ['pending', 'preparing', 'delivering', 'delivered', 'cancelled'].includes(status)) {
+    orders = orders.filter(o => o.status === status);
+  }
+  
+  orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  const start = (page - 1) * limit;
+  const end = start + limit;
+  const paginatedOrders = orders.slice(start, end);
+  
+  res.json({
+    total: orders.length,
+    page: Number(page),
+    limit: Number(limit),
+    orders: paginatedOrders.map(order => ({
+      id: order.id,
+      clientName: order.clientName,
+      clientEmail: order.clientEmail,
+      total: order.total,
+      date: order.date,
+      status: order.status,
+      location: order.location,
+      itemsCount: order.items.reduce((sum, i) => sum + i.qty, 0)
+    }))
+  });
+});
+
+// 9. Rota de saúde
+app.get('/api/health', (req, res) => {
+  const db = readDB();
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    ordersCount: db.orders.length,
+    usersCount: db.users.length,
+    pendingOrders: db.orders.filter(o => o.status === 'pending').length
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`📍 API: http://localhost:${PORT}/api`);
+  console.log(`📊 Endpoints disponíveis:`);
+  console.log(`   POST   /api/login`);
+  console.log(`   GET    /api/profile`);
+  console.log(`   GET    /api/menu`);
+  console.log(`   POST   /api/orders`);
+  console.log(`   GET    /api/orders`);
+  console.log(`   GET    /api/orders/:orderId/track`);
+  console.log(`   PUT    /api/admin/orders/:orderId/status`);
+  console.log(`   GET    /api/admin/orders`);
+  console.log(`   GET    /api/health`);
 });

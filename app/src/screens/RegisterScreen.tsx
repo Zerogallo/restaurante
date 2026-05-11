@@ -62,7 +62,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
     setLoading(true);
     try {
       await login(email, password, name);
-      navigation.replace('Main');
+      navigation.replace('HomeTabs');
     } catch (error: any) {
       Alert.alert('Erro no cadastro', error.response?.data?.error || 'Não foi possível realizar o cadastro.');
     } finally {

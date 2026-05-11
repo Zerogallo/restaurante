@@ -6,7 +6,7 @@
       "name": "Renan ",
       "phone": "",
       "password_hash": "$2b$10$ILeNPu/Bc/nv.rJe9rqlNe7ubANZ8OUt6dUSlN10NoGVuHT0YL6Ti",
-      "total_spent": 41.3
+      "total_spent": 256.3
     },
     {
       "id": "1d889fcf-c02d-445a-aebe-68ccf798d5cc",
@@ -59,6 +59,69 @@
       "category": "drink",
       "price": 7.9,
       "description": "Laranja, limão, couve"
+    },
+    {
+      "id": "7",
+      "name": "Água Mineral 500ml",
+      "category": "drink",
+      "price": 4.5,
+      "description": ""
+    },
+    {
+      "id": "8",
+      "name": "Bolo de Chocolate",
+      "category": "dessert",
+      "price": 12.9,
+      "description": "Chocolate belga"
+    },
+    {
+      "id": "9",
+      "name": "Salada Caesar",
+      "category": "food",
+      "price": 18.5,
+      "description": "Alface, croutons, parmesão"
+    },
+    {
+      "id": "10",
+      "name": "Espaguete à Bolonhesa",
+      "category": "food",
+      "price": 28,
+      "description": "Molho de carne, queijo ralado"
+    },
+    {
+      "id": "11",
+      "name": "Sorvete de Baunilha",
+      "category": "dessert",
+      "price": 7.5,
+      "description": "Com calda de chocolate"
+    },
+    {
+      "id": "12",
+      "name": "Suco de Abacaxi com Hortelã",
+      "category": "drink",
+      "price": 8,
+      "description": ""
+    },
+    {
+      "id": "13",
+      "name": "Café Expresso",
+      "category": "drink",
+      "price": 5,
+      "description": ""
+    },
+    {
+      "id": "14",
+      "name": "Torta de Limão",
+      "category": "dessert",
+      "price": 10,
+      "description": ""
+    },
+    {
+      "id": "15",
+      "name": "Hambúrguer Artesanal",
+      "category": "food",
+      "price": 30,
+      "description": "Pão brioche, carne 180g, queijo cheddar, alface, tomate"
     }
   ],
   "orders": [
@@ -212,6 +275,182 @@
       "location": "Rua juparana",
       "date": "2026-05-11T19:13:52.293Z",
       "status": "pending"
+    },
+    {
+      "id": "3d070185-5c0f-485d-abf0-2a33b2e67c98",
+      "userId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "clientName": "Renan ",
+      "clientEmail": "renan.genesisgt724532@gmail.com",
+      "items": [
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        }
+      ],
+      "total": 6.5,
+      "observations": "",
+      "location": "Rua Monte Verde ",
+      "date": "2026-05-11T19:34:58.567Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T19:34:58.567Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
+    },
+    {
+      "id": "2aabd651-1521-41ee-8a6e-173fcabc02cc",
+      "userId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "clientName": "Renan ",
+      "clientEmail": "renan.genesisgt724532@gmail.com",
+      "items": [
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        }
+      ],
+      "total": 6.5,
+      "observations": "",
+      "location": "Rua Monte Verde ",
+      "date": "2026-05-11T19:36:24.104Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T19:36:24.104Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
+    },
+    {
+      "id": "e55d762e-0976-441f-8afd-1abe40ce3754",
+      "userId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "clientName": "Renan ",
+      "clientEmail": "renan.genesisgt724532@gmail.com",
+      "items": [
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        },
+        {
+          "id": "2",
+          "name": "Parmegiana",
+          "price": 32.9,
+          "qty": 1
+        },
+        {
+          "id": "3",
+          "name": "Pudim",
+          "price": 8.9,
+          "qty": 1
+        },
+        {
+          "id": "5",
+          "name": "Coca-Cola 350ml",
+          "price": 6.5,
+          "qty": 1
+        }
+      ],
+      "total": 74.2,
+      "observations": "",
+      "location": "Rua Monte Verde ",
+      "date": "2026-05-11T19:37:21.376Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T19:37:21.376Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
+    },
+    {
+      "id": "498ad3f7-a2ab-4557-9e6d-1c22f0435401",
+      "userId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "clientName": "Renan ",
+      "clientEmail": "renan.genesisgt724532@gmail.com",
+      "clientId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "items": [
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        }
+      ],
+      "total": 25.9,
+      "subtotal": 25.9,
+      "observations": "",
+      "location": "Rua Monte Verde ",
+      "date": "2026-05-11T19:45:16.654Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T19:45:16.654Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
+    },
+    {
+      "id": "85910282-9002-4fcf-b8d6-377ac26e8f72",
+      "userId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "clientName": "Renan ",
+      "clientEmail": "renan.genesisgt724532@gmail.com",
+      "clientId": "b9c74626-339f-4f4a-8e7e-042433092435",
+      "items": [
+        {
+          "id": "1",
+          "name": "Frango Grelhado",
+          "price": 25.9,
+          "qty": 1
+        },
+        {
+          "id": "15",
+          "name": "Hambúrguer Artesanal",
+          "price": 30,
+          "qty": 1
+        },
+        {
+          "id": "10",
+          "name": "Espaguete à Bolonhesa",
+          "price": 28,
+          "qty": 1
+        },
+        {
+          "id": "14",
+          "name": "Torta de Limão",
+          "price": 10,
+          "qty": 1
+        },
+        {
+          "id": "12",
+          "name": "Suco de Abacaxi com Hortelã",
+          "price": 8,
+          "qty": 1
+        }
+      ],
+      "total": 101.9,
+      "subtotal": 101.9,
+      "observations": "",
+      "location": "Rua Monte Castelo ",
+      "date": "2026-05-11T20:32:01.487Z",
+      "status": "pending",
+      "statusHistory": [
+        {
+          "status": "pending",
+          "timestamp": "2026-05-11T20:32:01.487Z",
+          "message": "Pedido confirmado e aguardando na fila"
+        }
+      ]
     }
   ]
 }

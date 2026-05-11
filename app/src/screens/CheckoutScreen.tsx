@@ -66,7 +66,7 @@ export default function CheckoutScreen({ navigation }: CheckoutScreenProps) {
             text: 'OK',
             onPress: () => {
               clearCart();
-              navigation.navigate('Início');
+              navigation.navigate('HomeTabs');
             },
           },
         ]

@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     setLoading(true);
     try {
       await login(email, password);
-      navigation.replace('Main');
+      navigation.replace('HomeTabs');
     } catch (error: any) {
       Alert.alert('Erro', error.response?.data?.error || 'Falha na autenticação');
     } finally {
